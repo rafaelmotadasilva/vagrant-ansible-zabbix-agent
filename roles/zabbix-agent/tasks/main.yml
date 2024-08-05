@@ -1,0 +1,41 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Copiar o arquivo do repositório Zabbix
+  copy:
+    src: files/zabbix-release_6.4-1+ubuntu20.04_all.deb
+    dest: /tmp/zabbix-release_6.4-1+ubuntu20.04_all.deb
+
+- name: Instalar o pacote do repositório Zabbix
+  apt:
+    deb: /tmp/zabbix-release_6.4-1+ubuntu20.04_all.deb
+
+- name: Verificar se o repositório Zabbix foi adicionado
+  shell: cat /etc/apt/sources.list.d/zabbix.list
+  register: zabbix_repo_check
+
+- debug:
+    var: zabbix_repo_check.stdout
+
+- name: Update apt cache novamente
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Instalar o Zabbix agent2
+  apt:
+    name: zabbix-agent2
+    state: present
+
+- name: Copiar o arquivo de configuração do Zabbix agent
+  template:
+    src: zabbix_agent2.conf.j2
+    dest: /etc/zabbix/zabbix_agent2.conf
+
+- name: Start e enable o Zabbix agent2
+  systemd:
+    name: zabbix-agent2
+    state: started
+    enabled: yes

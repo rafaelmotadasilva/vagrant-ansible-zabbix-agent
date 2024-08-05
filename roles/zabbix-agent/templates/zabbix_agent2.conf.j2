@@ -1,0 +1,34 @@
+# Zabbix Agent2 configuration file
+
+# Server: Specify the IP address or hostname of the Zabbix server
+# or proxy. You can list multiple IPs or hostnames separated by commas.
+Server=127.0.0.1
+
+# ServerActive: Specify the IP address or hostname of the Zabbix server
+# for active checks. You can list multiple IPs or hostnames separated by commas.
+# Leave blank if not using active checks.
+ServerActive=
+
+# Hostname: Define the hostname as it will appear in the Zabbix frontend.
+Hostname={{ inventory_hostname }}
+
+# ListenPort: Port the agent will listen on.
+ListenPort=10050
+
+# LogFile: Location of the log file.
+LogFile=/var/log/zabbix/zabbix_agent2.log
+
+# PidFile: Location of the PID file.
+PidFile=/run/zabbix/zabbix_agent2.pid
+
+# Include: Optional. Include additional configuration files.
+Include=/etc/zabbix/zabbix_agent2.d/*.conf
+
+# Timeout: Specifies how long the agent waits for responses (in seconds).
+Timeout=30
+
+# Optional settings
+LogLevel=3
+EnableRemoteCommands=0
+AllowRoot=0
+RefreshActiveChecks=120
