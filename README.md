@@ -34,9 +34,7 @@ Se mais de uma interface de rede estiver disponível na máquina host, o Vagrant
 
 ## Executando o script
 
-A maneira mais simples de usar o script acima é copiar e colar o conteúdo em um arquivo chamado `Vagrantfile`.
-
-Em seguida, em um terminal, execute o seguinte comando:
+Para criar e configurar a máquina virtual, execute o seguinte comando no terminal:
 
 ```
 vagrant up
