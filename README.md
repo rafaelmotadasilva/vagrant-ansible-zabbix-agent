@@ -34,7 +34,7 @@ Se mais de uma interface de rede estiver disponível na máquina host, o Vagrant
 
 ## Executando o script
 
-Para criar e configurar a máquina virtual, execute o seguinte comando no terminal:
+Após criar o Vagrantfile, você pode iniciar a máquina virtual com o comando:
 
 ```
 vagrant up
@@ -48,16 +48,17 @@ Certifique-se de que seu projeto tenha a seguinte estrutura:
 
 ```
 .
-├── Vagrantfile
 ├── playbook.yml
-└── roles
-    └── zabbix-agent
-        ├── files
-        │   └── zabbix-release_6.4-1+ubuntu20.04_all.deb
-        ├── tasks
-        │   └── main.yml
-        └── templates
-            └── zabbix_agent2.conf.j2
+├── README.md
+├── roles
+│   └── zabbix-agent
+│       ├── files
+│       │   └── zabbix-release_6.4-1+ubuntu20.04_all.deb
+│       ├── tasks
+│       │   └── main.yml
+│       └── templates
+│           └── zabbix_agent2.conf.j2
+└── Vagrantfile
 ```
 
 ## playbook.yml
