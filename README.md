@@ -1,122 +1,64 @@
-<h1>
-    <img align="center" width="40px" src="https://www.ansible.com/images/project-logos/ansible-core.svg" alt="Ansible logo">
-    <span>Criando uma role do Zabbix Agent no Ansible</span>
-</h1>
+# Zabbix Agent com Vagrant e Ansible
 
-Repositório desenvolvido para fins educativos.
+Provisionamento automatizado de uma VM com Vagrant e configuração do Zabbix Agent via role Ansible — do zero ao agente monitorando em minutos.
 
-## Objetivo
+## Stack
 
-Criar uma máquina virtual através de um arquivo do Vagrantfile. Configurar o provisionamento com Ansible e criar uma role do Zabbix Agent para realizar as seguintes tarefas:
+- **Vagrant** — criação e gerenciamento da VM (Ubuntu 20.04)
+- **Ansible** — provisionamento e configuração via role
+- **Zabbix Agent** — agente de monitoramento instalado e configurado
 
-- Instalar o serviço do Zabbix Agent.
-- Configurar um template para o arquivo de configuração do Zabbix Agent.
-
-## Vagrantfile
-
-Este é um exemplo simples de `Vagrantfile`, que cria uma máquina virtual e configura o provisionamento com Ansible.
-
-```
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
-Vagrant.configure("2") do |config|
-  config.vm.box = "bento/ubuntu-20.04"
-  config.vm.network "public_network"
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "playbook.yml"
-  end
-end
-```
-
-Se mais de uma interface de rede estiver disponível na máquina host, o Vagrant solicitará que você escolha qual interface a máquina virtual deve fazer a ponte.
-
-## Executando o script
-
-Após criar o Vagrantfile, você pode iniciar a máquina virtual com o comando:
-
-```
-vagrant up
-```
-
-Esse comando é fundamental no Vagrant, pois ele cria e configura as máquinas virtuais (VMs) conforme definido no seu Vagrantfile. 
-
-## Estrutura do Projeto
-
-Certifique-se de que seu projeto tenha a seguinte estrutura:
+## Estrutura
 
 ```
 .
-├── playbook.yml
-├── README.md
-├── roles
-│   └── zabbix-agent
-│       ├── files
-│       │   └── zabbix-release_6.4-1+ubuntu20.04_all.deb
-│       ├── tasks
-│       │   └── main.yml
-│       └── templates
-│           └── zabbix_agent2.conf.j2
-└── Vagrantfile
+├── Vagrantfile          # Define a VM e aciona o Ansible
+├── playbook.yml         # Playbook principal
+└── roles/
+    └── zabbix-agent/
+        ├── tasks/       # Tarefas de instalação e configuração
+        └── templates/   # Template do arquivo de configuração do agente
 ```
 
-## playbook.yml
+## Pré-requisitos
 
-Um exemplo básico de um playbook Ansible para usar a role `zabbix-agent`:
+- [Vagrant](https://www.vagrantup.com/)
+- [VirtualBox](https://www.virtualbox.org/)
+- [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/)
+
+## Como usar
+
+```bash
+git clone https://github.com/rafaelmotadasilva/vagrant-ansible-zabbix-agent.git
+cd vagrant-ansible-zabbix-agent
+
+vagrant up
+```
+
+O Vagrant cria a VM e aciona automaticamente o Ansible para:
+
+1. Instalar o Zabbix Agent
+2. Aplicar o template de configuração com as definições do servidor Zabbix
+
+## Configuração
+
+Antes de subir a VM, edite o template de configuração na role para apontar para o seu servidor Zabbix:
 
 ```
----
-- name: Provision Zabbix Agent
-  hosts: all
-  become: yes
-  roles:
-    - zabbix-agent
+roles/zabbix-agent/templates/zabbix_agentd.conf.j2
 ```
 
-## roles/zabbix-agent/tasks/main.yml
+Ajuste a variável `ZBX_SERVER_HOST` com o IP ou hostname do seu Zabbix Server.
 
-Crie a role `zabbix-agent` para realizar as seguintes tarefas:
+## Parar e destruir a VM
 
+```bash
+vagrant halt    # Para a VM
+vagrant destroy # Remove a VM completamente
 ```
----
-- name: Update apt cache
-  apt:
-    update_cache: yes
 
-- name: Copiar o arquivo do repositório Zabbix
-  copy:
-    src: files/zabbix-release_6.4-1+ubuntu20.04_all.deb
-    dest: /tmp/zabbix-release_6.4-1+ubuntu20.04_all.deb
+## Referências
 
-- name: Instalar o pacote do repositório Zabbix
-  apt:
-    deb: /tmp/zabbix-release_6.4-1+ubuntu20.04_all.deb
-
-- name: Verificar se o repositório Zabbix foi adicionado
-  shell: cat /etc/apt/sources.list.d/zabbix.list
-  register: zabbix_repo_check
-
-- debug:
-    var: zabbix_repo_check.stdout
-
-- name: Update apt cache novamente
-  apt:
-    update_cache: yes
-    cache_valid_time: 3600
-
-- name: Instalar o Zabbix agent2
-  apt:
-    name: zabbix-agent2
-    state: present
-
-- name: Copiar o arquivo de configuração do Zabbix agent
-  template:
-    src: zabbix_agent2.conf.j2
-    dest: /etc/zabbix/zabbix_agent2.conf
-
-- name: Start e enable o Zabbix agent2
-  systemd:
-    name: zabbix-agent2
-    state: started
-    enabled: yes
-```
+- [Documentação do Vagrant](https://developer.hashicorp.com/vagrant/docs)
+- [Documentação do Ansible](https://docs.ansible.com/)
+- [Zabbix Agent — instalação](https://www.zabbix.com/documentation/current/en/manual/installation/install_from_packages)
